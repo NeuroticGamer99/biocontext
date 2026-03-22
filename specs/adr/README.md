@@ -72,3 +72,4 @@ File naming convention: `NNNN-short-hyphenated-title.md` where `NNNN` is the nex
 | [ADR-0018](0018-fhir-interoperability.md) | FHIR / HL7 Interoperability | Proposed — stub |
 | [ADR-0019](0019-multi-device-sync.md) | Multi-Device Sync | Proposed — stub |
 | [ADR-0020](0020-plugin-registry.md) | Plugin Registry / Marketplace | Proposed — stub |
+| [ADR-0021](0021-time-series-aggregation.md) | Time-Series Data Aggregation Strategy | Proposed — stub |

@@ -288,6 +288,29 @@ This boundary must be documented prominently in all user-facing plugin documenta
 
 ---
 
+## Future: Plugin Configuration Schema
+
+Plugins currently read configuration from the shared TOML config via `context.config`. This is sufficient for v1 (power users editing TOML). When the GUI (PySide6) needs to render plugin settings forms, plugins will need a way to declare their configuration schema — what keys they expect, types, defaults, and validation rules.
+
+The likely shape is a module-level declaration alongside existing ones:
+
+```python
+PLUGIN_CONFIG_SCHEMA = {
+    "api_key":  {"type": "str",  "required": True,  "description": "Dexcom API key"},
+    "interval": {"type": "int",  "default": 21600,  "description": "Poll interval in seconds"},
+    "enabled":  {"type": "bool", "default": True,    "description": "Enable automatic polling"},
+}
+```
+
+This would enable:
+- **Validation at load time** — reject plugins with missing required config before `register()` is called
+- **GUI form generation** — PySide6 settings panel renders appropriate widgets per type
+- **Documentation generation** — plugin config requirements are self-describing
+
+Design deferred until the GUI is implemented and real plugin configuration patterns emerge.
+
+---
+
 ## What Plugins Can Do
 - Register CLI commands, MCP tools, import adapters, analysis functions, query patterns, and reference range frameworks
 - Provide services to other plugins via the service registry
