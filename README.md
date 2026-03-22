@@ -47,7 +47,7 @@ CLI + plugins           ─┘
 - **CLI (command-line interface)** — first-class scripting layer with a directory-scanning plugin system. Drop a `.py` file into the plugins directory; new commands appear.
 - **Event bus** — SSE-based by default. ZeroMQ and MQTT available as adapter plugins for more complex deployments.
 
-Full architectural documentation is in [`specs/`](specs/), including 20 Architecture Decision Records covering every major design choice.
+Full architectural documentation is in [`specs/`](specs/), including 20+ Architecture Decision Records covering every major design choice.
 
 ---
 
@@ -114,7 +114,7 @@ Laboratory results are not directly comparable across different platforms and as
 
 ### AI analysis has limitations
 
-AI-generated analysis can be incorrect, incomplete, or misinterpreted. When using a cloud-based AI client, your health data leaves your machine during analysis — review the privacy policy of your chosen AI provider. When using a local LLM, no data leaves your machine.
+AI-generated analysis can be incorrect, incomplete, or misinterpreted. When using a cloud-based AI client, your health data leaves your machine during analysis — review the privacy policy of your chosen AI client. When using a local LLM, no data leaves your machine.
 
 ### No warranty
 

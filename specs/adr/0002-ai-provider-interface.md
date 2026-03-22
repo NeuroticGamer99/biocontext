@@ -1,4 +1,4 @@
-# ADR-0002: AI Provider Interface
+# ADR-0002: AI Client Interface
 
 ## Status
 Proposed

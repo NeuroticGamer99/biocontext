@@ -53,7 +53,7 @@ File naming convention: `NNNN-short-hyphenated-title.md` where `NNNN` is the nex
 | ADR | Title | Status |
 |---|---|---|
 | [ADR-0001](0001-mcp-server-language.md) | Implementation Language | Accepted |
-| [ADR-0002](0002-ai-provider-interface.md) | AI Provider Interface | Proposed |
+| [ADR-0002](0002-ai-provider-interface.md) | AI Client Interface | Proposed |
 | [ADR-0003](0003-database-backend.md) | Database Backend | Proposed |
 | [ADR-0004](0004-data-ingestion-strategy.md) | Data Ingestion Strategy | Accepted (partially) |
 | [ADR-0005](0005-reference-range-frameworks.md) | Reference Range Frameworks | Proposed |
