@@ -34,6 +34,24 @@ Home Assistant's automation trace system (recording variables, branch decisions,
 
 Time-based triggers (intervals and cron expressions) are supported by the event bus scheduler (ADR-0011, `schedule.*` events). The automation engine should treat these identically to any other event trigger — no special time-handling code in the automation layer.
 
+### State machines
+
+Health data has natural state machine patterns that go beyond simple trigger/condition/action rules:
+
+- **Treatment protocols**: baseline → intervention → monitoring → reassessment → next decision
+- **Alert escalation**: normal → elevated → critical → acknowledged → resolved
+- **Lab monitoring sequences**: initial draw → follow-up ordered → follow-up received → reviewed
+- **Medication titration**: starting dose → lab check → dose adjustment → lab check → stable
+
+Home Assistant's lack of a state machine primitive is one of its most persistent community complaints — users simulate state machines with helper entities and complex automation chains.
+
+When the automation interface is designed, consider whether state machines should be:
+- A built-in primitive in the automation engine (states, transitions, guards, entry/exit actions)
+- A separate plugin type (`state_machine`) that publishes state transition events to the bus
+- A documented pattern for plugin authors using existing primitives
+
+The choice depends on how frequently real use cases require multi-step stateful workflows versus simple reactive rules.
+
 ## Comparable Prior Art
 - Home Assistant automations (YAML-based trigger/condition/action) — includes execution trace UI
 - Node-RED flow-based programming
