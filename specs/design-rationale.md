@@ -200,6 +200,26 @@ The rationale for tools over raw SQL: natural language queries from an AI client
 
 ---
 
+## Future Query Interface: GraphQL
+
+The REST API (ADR-0006) is the right starting point — it is simple, well-understood, and sufficient for CRUD operations and the structured tool calls that the MCP server and CLI need.
+
+However, health data queries can become complex in ways that are awkward to express in REST:
+- "Give me all insulin results with their corresponding glucose results from draws within 7 days, grouped by lab" — requires either a bespoke REST endpoint or multiple round-trips with client-side joining
+- "Return labs, events, and interventions overlapping a date range, with only the fields the UI needs" — REST either over-fetches (full objects) or requires a proliferation of query parameters
+- "Fetch the 10 most recent results for each of 5 specific biomarkers in a single request" — REST requires 5 calls or a batch endpoint
+
+GraphQL handles these naturally: the client specifies exactly the shape of data it needs, the server resolves it in one round-trip, and the schema is self-documenting.
+
+**This is not a near-term priority.** REST is sufficient for v1. GraphQL should be considered when:
+- The GUI dashboard makes complex, multi-entity queries that strain the REST endpoint design
+- Plugin authors or AI client tool implementations need flexible queries without requesting new REST endpoints
+- The query patterns from real use have stabilized enough to design a schema confidently
+
+If adopted, GraphQL would be an additional query interface alongside REST (not a replacement). It would be exposed by the Core Service as `POST /v1/graphql` and available to all clients. Libraries: Strawberry (Python, async-native, type-safe) is the natural fit with FastAPI.
+
+---
+
 ## What Does Not Belong in Git
 
 - The SQLite database file (`*.db`, `*.db-shm`, `*.db-wal`)

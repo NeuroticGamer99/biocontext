@@ -14,6 +14,27 @@ When a result was entered incorrectly and needs correction, overwriting silently
 **Audit trail**
 A `audit_log` table recording every data mutation (insert, update, delete) with: table name, row ID, operation type, old values (JSON), new values (JSON), timestamp, and source (import batch ID, user action, plugin name). Not the same as application logs — this is a user-facing data integrity record. Must be in the schema from migration 0001; adding it later means historical changes have no record.
 
+**Event sourcing as the audit trail implementation pattern**
+Event sourcing is the formal pattern for solving both the audit trail and longitudinal correction problems simultaneously. Instead of storing mutable current state and bolting on a separate audit log, the authoritative data is the append-only sequence of events (imported, corrected, deleted). Current state is derived by replaying or folding the event stream.
+
+Implications if adopted:
+- The audit trail is not a separate concern — it *is* the data model. Every mutation is an immutable event.
+- Longitudinal correction becomes natural: a correction is a new event that supersedes a prior event, with both permanently visible.
+- Current-state views (what the user queries) are materialized from the event stream — effectively CQRS (see below).
+- Replay enables time-travel queries: "what did we believe about insulin on 2025-06-01 before the correction on 2025-09-15?"
+- Adds complexity: every read path queries a materialized view, not the source events directly. Materialized views must be kept consistent.
+
+The alternative is the traditional mutable-row + audit-log approach, which is simpler but makes the audit log a second-class citizen that can drift from reality.
+
+This is a foundational schema decision. Resolve before migration 0001.
+
+**CQRS (Command Query Responsibility Segregation)**
+If event sourcing is adopted, CQRS follows naturally. Write operations append events; read operations query materialized views optimized for each access pattern (biomarker history, panel-by-date, trend analysis, CGM aggregates). ADR-0021 (time-series aggregation) is already moving in this direction — aggregate tables are a read model derived from raw data.
+
+Even without full event sourcing, a lighter CQRS pattern may be useful: the Core Service write path (import, correct, delete) goes through validation and audit logging, while the read path queries denormalized views or summary tables for performance. The MCP server tools and GUI dashboards are natural read-model consumers.
+
+Decide the degree of separation between write and read models before designing the schema.
+
 ---
 
 ## Schema
