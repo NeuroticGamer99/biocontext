@@ -14,7 +14,7 @@ Note: this ADR was originally scoped to the MCP server only. It has been broaden
 - GUI framework availability (PySide6 for Qt — see ADR-0006)
 - FastAPI for the Core Service HTTP layer
 - Ease of open source contribution
-- Distributable binary support (Nuitka for compiled output)
+- Zero-friction installation for non-technical users — no Python knowledge required
 - Single language across all components
 
 ## Considered Options
@@ -33,12 +33,12 @@ Python is the language for all platform components: Core Service (FastAPI), MCP 
 - PySide6 (Qt for Python, LGPL) for the GUI — native performance, excellent charting, cross-platform
 - typer for the CLI — clean, declarative command definitions
 - Rich ecosystem for data ingestion: CSV, JSON, PDF parsing, HTTP clients for external APIs
-- Nuitka compiles Python to C-based executables — shippable binary without requiring Python installed
+- `uv tool install biocontext` installs the full application into an isolated, self-contained environment — users need only `uv`, not Python
 - `pip-audit` and `uv` for dependency management and security auditing
 
 ### Negative Consequences / Tradeoffs
 - The official Anthropic MCP SDK is TypeScript-first; the Python SDK (`mcp` / `fastmcp`) is slightly less mature — accepted given the ecosystem tradeoffs
-- Python packaging has historically been complex; mitigated by `uv` and Nuitka for distribution
+- Python packaging has historically been complex; mitigated by `uv tool install` for distribution
 
 ## Pros and Cons of the Options
 
