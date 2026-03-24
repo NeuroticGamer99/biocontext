@@ -327,6 +327,7 @@ Design deferred until the GUI is implemented and real plugin configuration patte
 ---
 
 ## Links
+- Extended by: [ADR-0024](0024-plugin-extensions.md) — adds `PLUGIN_VERSION`, `PLUGIN_PACKAGES`, pip dependency management, and plugin versioning policy
 - Related: [ADR-0006](0006-application-architecture.md) — micro-kernel architecture; plugins as the primary delivery mechanism for business logic
 - Related: [ADR-0004](0004-data-ingestion-strategy.md) — import adapters are a plugin type
 - Related: [ADR-0005](0005-reference-range-frameworks.md) — reference range frameworks are a plugin type
