@@ -118,3 +118,9 @@ Startup order (enforced by launcher):
 4. Import Pipeline (depends on Core Service)
 
 This order is determined by health endpoint readiness, not fixed sleep intervals.
+
+---
+
+## Links
+- Related: [ADR-0008](adr/0008-process-lifecycle.md) — process lifecycle and launcher behavior
+- Related: [security.md](security.md) — health data logging prohibition

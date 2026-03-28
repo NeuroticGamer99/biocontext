@@ -187,7 +187,7 @@ A `schema_version` table tracks applied migrations. All schema changes should be
 
 ## MCP Server Design
 
-The MCP server is a thin layer over SQLite. It exposes focused tools rather than raw SQL access:
+The MCP server is a thin translation layer between AI client tool calls and the Core REST API (ADR-0006, ADR-0007). It has no direct database access. It exposes focused tools rather than raw SQL access:
 
 - `get_biomarker_history` — results for a named biomarker, with optional lab and date range filters
 - `get_panel_by_date` — all results from a specific draw date
@@ -196,7 +196,7 @@ The MCP server is a thin layer over SQLite. It exposes focused tools rather than
 - `search_biomarkers` — fuzzy name match for discovery
 - `get_events_and_interventions` — clinical timeline for context overlay on any analysis
 
-The rationale for tools over raw SQL: natural language queries from an AI client map better to semantically named tools than to ad hoc SQL generation. It also keeps the AI client from accidentally scanning large tables without appropriate filters.
+The rationale for tools over raw SQL: natural language queries from an AI client map better to semantically named tools than to ad hoc SQL generation. It also keeps the AI client from accidentally scanning large tables without appropriate filters. The Core Service resolves these tool calls against the database and returns focused result sets, keeping context window usage efficient regardless of how large the database grows.
 
 ---
 
@@ -236,7 +236,7 @@ See `.gitignore` for the complete exclusion list.
 
 This schema is designed around one person's data but is intentionally generic. To adapt it:
 
-1. Review the `biomarker-catalog.md` for the canonical name and category conventions used
+1. Review the canonical name and category conventions in the `biomarkers` table (see [data-model.md](data-model.md) and Canonical Biomarker Names above)
 2. Add lab sources to the `labs` table that match your providers
 3. The `interventions` table is flexible — any medication, supplement, or lifestyle intervention can be tracked
 4. CGM and wearable tables are optional — the core value is in the `results`, `events`, and `interventions` tables

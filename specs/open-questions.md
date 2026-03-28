@@ -35,6 +35,23 @@ Even without full event sourcing, a lighter CQRS pattern may be useful: the Core
 
 Decide the degree of separation between write and read models before designing the schema.
 
+**Decision sequencing note:** The event sourcing / audit trail / CQRS decisions must be resolved before ADR-0021 (time-series aggregation) and before the first migration is written. Materialized aggregates and audit logs are both natural consequences of the event sourcing choice — designing them independently risks inconsistency.
+
+---
+
+## Architecture — Undecided ADRs
+
+Three ADRs have TBD decisions that should be resolved as design progresses:
+
+**Database backend ([ADR-0003](adr/0003-database-backend.md))**
+SQLite-only vs pluggable backend (PostgreSQL). Affects the migration runner (ADR-0009), time-series aggregation (ADR-0021), and multi-device sync (ADR-0019). The pluggable option adds complexity that may not be justified before core features exist.
+
+**AI client interface ([ADR-0002](adr/0002-ai-provider-interface.md))**
+Claude-only vs MCP-based pluggability vs full provider abstraction. The architecture already assumes MCP-based pluggability (ADR-0007 chose HTTP/SSE transport for AI-client-agnostic access), but the ADR itself is still formally Proposed with TBD.
+
+**Reference range frameworks ([ADR-0005](adr/0005-reference-range-frameworks.md))**
+Schema approach for named reference range frameworks. Affects how "is this result optimal?" queries work for the MCP server and GUI. The schema sketch exists in the ADR but no decision is recorded.
+
 ---
 
 ## Schema
@@ -47,6 +64,9 @@ Adding it now keeps the schema self-contained and makes aliases a first-class co
 
 **Biomarker category taxonomy**
 The `biomarkers` table has a `category` column (lipids, metabolic, thyroid, hormones, inflammation, etc.). This taxonomy should be defined and documented before bulk data entry begins so categories are consistent across sources.
+
+**Clinical documents — full-text search strategy**
+Clinical documents and visit notes ([data-model.md](data-model.md)) are a prioritized data type where the `body` column is the primary queryable surface for MCP tools. AI clients need to search across clinician narrative efficiently ("what did my cardiologist say about my LDL trajectory?"). Options: (a) SQLite FTS5 virtual table for full-text indexing — well-supported, zero-dependency, but adds schema complexity; (b) application-level search in the Core Service — simpler schema, but slow at scale; (c) embedding-based semantic search via a plugin — most powerful for natural language queries, but adds a vector store dependency. This should be decided before the clinical documents table is implemented.
 
 ---
 

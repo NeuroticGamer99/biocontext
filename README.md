@@ -26,7 +26,7 @@ The goal: a single longitudinal record of your health data, queryable by AI and 
 
 **N=1 data analysts and biohackers** — Multi-source lab normalization with canonical biomarker names. Reference range frameworks that go beyond lab flags — compare your results against longevity-optimized targets or practitioner-specific optimal ranges alongside the standard lab ranges. Longitudinal trend analysis across years of data. CGM correlation with periodic labs. Clinical event and intervention timelines as first-class overlays on every analysis.
 
-**Home Assistant users who want the same for health** — A micro-kernel architecture where first-party functionality ships as plugins against the same interfaces available to you. Replace, extend, or fork any component. Add import adapters for new data sources. Register new MCP tools that your AI client can call. Write automation rules that react to your health events. The compiled binary is a distribution mechanism, not a black box.
+**Home Assistant users who want the same for health** — A micro-kernel architecture where first-party functionality ships as plugins against the same interfaces available to you. Replace, extend, or fork any component. Add import adapters for new data sources. Register new MCP tools that your AI client can call. Write automation rules that react to your health events. The installed package is a distribution mechanism, not a black box.
 
 ---
 
@@ -36,7 +36,7 @@ biocontext is built as a set of independent processes with well-defined, version
 
 ```
 GUI (PySide6)           ─┐
-MCP Server (fastmcp)    ─┤→  Core Service (FastAPI, REST API v1)  →  SQLite / PostgreSQL
+MCP Server (fastmcp)    ─┤→  Core Service (FastAPI, REST API v1)  →  SQLite (SQLCipher)
 Import Pipeline         ─┤       ↑ auth, validation, event bus
 CLI + plugins           ─┘
 ```
@@ -57,14 +57,22 @@ The platform is designed around these data types, with importers planned or in p
 
 | Data type | Sources | Status |
 |---|---|---|
-| Lab results | Quest, Function Health, patient portals | Schema designed |
-| Body composition | Any InBody or similar scanner | Schema designed |
-| Continuous glucose | Levels (CSV export), Dexcom API | Planned |
-| Wearable / activity | Fitbit (Takeout), future: Apple Health XML | Planned |
-| Clinical events | Manual entry | Schema designed |
-| Interventions | Manual entry | Schema designed |
+| Lab results | Quest (via primary care and Function Health), patient portals | Partially designed |
+| Body composition | InBody 120, InBody 580 (via Enara Health) | Partially designed |
+| Continuous glucose | Levels (CSV export), Dexcom API | Partially designed |
+| Metabolic context | Levels (zone scores, glucose response) | Not yet designed |
+| Activity logs | Levels (food, exercise, notes) | Not yet designed |
+| Nutrition logs | Levels (detailed macros/micros) | Not yet designed |
+| Wearable / activity | Fitbit (Takeout), Apple Health XML | Partially designed |
+| Clinical events | Manual entry | Table defined |
+| Interventions | Manual entry (with full dose history tracking) | Table defined |
+| Clinical documents | Manual entry; future: patient portal export, PDF import | Not yet designed |
+
+All data enters through a structured import pipeline: full-batch validation before any write, atomic transactions (all-or-nothing per import), dry-run mode, and explicit conflict policies (reject, skip, or upsert) — no silent data mutation.
 
 Multi-source lab handling is a first-class design concern: every result row carries its lab source, reference ranges are stored per-row rather than per-biomarker, and canonical biomarker names normalize naming inconsistencies across labs.
+
+Clinical documents and visit notes are a prioritized data type — clinician narrative captures reasoning, differential diagnoses, and interpretation context that structured lab values cannot express. MCP tools can surface relevant visit notes alongside lab trends, enabling an AI client to answer questions like "what did my cardiologist say about my LDL trajectory?" or "summarize all provider guidance on my insulin resistance."
 
 ---
 
@@ -72,8 +80,8 @@ Multi-source lab handling is a first-class design concern: every result row carr
 
 The plugin architecture is designed for the same kind of extensibility that made Home Assistant the dominant home automation platform.
 
-- Drop a `.py` file or Python package into the plugins directory — no build step, no package manager
-- Plugins can register: CLI commands, MCP tools, import adapters, analysis functions, reference range frameworks, automation rules, notification channels
+- Drop a `.py` file or Python package into the plugins directory — no build step required. Plugins that need pip packages (pandas, numpy, etc.) declare them and the loader installs from a curated, version-locked catalog automatically.
+- Plugins can register: CLI commands, MCP tools, import adapters, analysis functions, query patterns, reference range frameworks, automation rules, notification channels
 - Plugins can provide services to other plugins via a namespaced service registry (`quest.parser`, `quest.api_client`, etc.)
 - Built-in functionality ships as first-party plugins against the same interfaces — there is no privileged internal API
 - Plugin API versioning with compatibility range declarations (`PLUGIN_API_MIN_VERSION`, `PLUGIN_API_MAX_VERSION`)
@@ -96,9 +104,9 @@ See [`specs/security.md`](specs/security.md) for the full security requirements 
 
 **Early development — design phase in-progress, implementation not yet started.**
 
-The full architecture is currently documented across 20+ ADRs covering application architecture, plugin system, event bus, job abstraction, encryption, data model, and more. The schema and migration runner are next. No installable release exists yet.
+The full architecture is currently documented across 20+ ADRs covering application architecture, plugin system, event bus, job abstraction, encryption, data model, and more. Work continues on the basic architecture specifications. No installable release exists yet.
 
-If you want to follow along or contribute, the [`specs/`](specs/) directory is the place to start. [`specs/design-rationale.md`](specs/design-rationale.md) covers the core design philosophy. [`specs/open-questions.md`](specs/open-questions.md) lists what still needs to be decided.
+If you want to follow along or contribute, the [`specs/`](specs/) directory is the place to start. [`specs/design-rationale.md`](specs/design-rationale.md) covers the core design philosophy. [`specs/open-questions.md`](specs/open-questions.md) lists known items that need to be decided.
 
 ---
 
