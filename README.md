@@ -2,9 +2,13 @@
 
 **Your health data, analyzed on your terms.**
 
+Your health data is scattered — bloodwork in a lab portal, glucose in an app, fitness data in another. Each result is a snapshot. Each source is an expert in its own corner and blind to everything else, and none of them give your AI assistant the context it needs to ask useful questions. The pattern you're trying to see is hiding in plain sight, split across apps and portals that each hold one piece of a puzzle nobody is assembling for you.
+
 Healthspan is a local-first personal health data platform. It aggregates lab results, continuous glucose monitoring, body composition, wearable activity, and clinical history into a single encrypted database — then exposes that data to AI-driven analysis through an open, extensible, plugin-driven architecture.
 
 Think of it as Home Assistant for personal health data: a stable, privacy-respecting core with a hackable plugin ecosystem where the line between built-in capability and your own extensions is intentionally blurred.
+
+> **Note:** Healthspan is currently for technically comfortable users. If you're not familiar with the command line, check back as the GUI and onboarding experience matures.
 
 ---
 
