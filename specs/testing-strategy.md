@@ -22,7 +22,13 @@ Standards and approach for testing the biocontext platform. Testing is a design 
 
 Isolated tests of individual functions and classes. No database, no HTTP, no filesystem (except temp files).
 
-**Coverage targets:**
+Two distinct sub-categories of function belong here:
+
+**Pure logic (no data source dependency):** functions whose inputs are primitive values or simple arguments — no connection to the database or any I/O. These are straightforward to test because the inputs are constructed from scratch.
+
+**In-memory data transforms:** functions that process data structures already retrieved from the database. Once a query result is held in Python objects, dicts, or lists, any function that transforms, enriches, or aggregates that data is a pure unit test target — the database is not involved and does not need to be mocked. Construct the input data inline as a fixture dict or object; call the function; assert on the output. These tests are stable because they couple only to the data contract, not to the database layer.
+
+**Coverage targets — pure logic:**
 - Biomarker alias resolution and canonical name mapping
 - Timestamp convention: UTC conversion, timezone inference, correction workflow
 - Import record parsing and validation (per-source importer modules)
@@ -30,6 +36,15 @@ Isolated tests of individual functions and classes. No database, no HTTP, no fil
 - Plugin compatibility checking (API version range validation, dependency resolution)
 - Argon2id key derivation (deterministic output for known inputs)
 - Configuration parsing and validation
+
+**Coverage targets — in-memory data transforms:**
+- Trend computation over a time series of lab results
+- CGM aggregation: fasting baseline, time-in-range, postprandial statistics
+- Multi-source deduplication and merge logic (same biomarker, multiple labs)
+- Reference range annotation applied to result sets
+- Unit conversion (e.g., mg/dL → mmol/L, weight units)
+- Response shaping and serialization before API delivery
+- Computed field enrichment on domain objects (derived ratios, z-scores, delta from prior draw)
 
 ### Integration tests
 
